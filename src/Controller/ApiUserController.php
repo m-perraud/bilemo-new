@@ -27,7 +27,7 @@ class ApiUserController extends AbstractController
     #[Route('/api/users/{id}', name: 'api_user_details', methods:'GET')]
     public function getUserDetails(User $user): JsonResponse
     {
-            return $this->json($user, 200, [], ['groups' => 'client:list']);
+            return $this->json($user, 200, [], ['groups' => 'client:details']);
     }
 
     #[Route('/api/users/{id}', name: 'api_user_delete', methods:['DELETE'])]
