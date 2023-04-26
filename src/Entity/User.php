@@ -17,9 +17,8 @@ class User
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['client:list', ''])]
+    #[Groups(['client:list', 'client:create'])]
     #[Assert\NotBlank]
-    //#[Assert\Length(min=3)]
     private ?string $Username = null;
 
     #[ORM\ManyToOne(inversedBy: 'users', cascade: ['persist'])]
@@ -29,14 +28,17 @@ class User
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['client:create'])]
     private ?string $Firstname = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['client:create'])]
     private ?string $Lastname = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['client:create'])]
     private ?string $Email = null;
 
     public function getId(): ?int

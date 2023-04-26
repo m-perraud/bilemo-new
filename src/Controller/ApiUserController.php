@@ -42,13 +42,11 @@ class ApiUserController extends AbstractController
 
 
     #[Route('/api/users', name: 'api_user_post', methods:'POST')]
-    public function storeUser(ClientRepository $clientRepository, Request $request, SerializerInterface $serializer, EntityManagerInterface $manager, ValidatorInterface $validator)
+    public function storeUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $manager, ValidatorInterface $validator)
     {
-        $client =  $clientRepository->find(1392);
 
             $user = $serializer->deserialize($request->getContent(), User::class, 'json');
-            $user->setClient($client);
-            //$user->setClient($clientId);
+            $user->setClient($this->getUser());
 
         $errors = $validator->validate($user);
 
@@ -58,6 +56,6 @@ class ApiUserController extends AbstractController
             $manager->persist($user);
             $manager->flush();
     
-            return $this->json($user, 201, [], ['groups' => 'client:list']);
+            return $this->json($user, 201, [], ['groups' => 'client:create']);
     }
 }
