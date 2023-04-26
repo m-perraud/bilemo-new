@@ -17,7 +17,7 @@ class User
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['client:list', ''])]
+    #[Groups(['client:list', 'client:details'])]
     #[Assert\NotBlank]
     //#[Assert\Length(min=3)]
     private ?string $Username = null;
@@ -29,14 +29,17 @@ class User
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['client:details'])]
     private ?string $Firstname = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['client:details'])]
     private ?string $Lastname = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['client:details'])]
     private ?string $Email = null;
 
     public function getId(): ?int
