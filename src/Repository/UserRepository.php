@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use App\Entity\Client;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
@@ -42,12 +43,16 @@ class UserRepository extends ServiceEntityRepository
 
     public function findAllUsersWithPagination(Client $client, int $page, int $limit) 
     {
-        $query = $this->createQueryBuilder('b')
+        $qb = $this->createQueryBuilder('b')
             ->andWhere('b.Client = :Client')
             ->setParameter('Client', $client)
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit);
-        return $query->getQuery()->getResult();
+
+        $query = $qb->getQuery();
+        $query->setFetchMode(User::class, "Client", ClassMetadata::FETCH_EAGER);
+
+        return $query->getResult();
     }
 
 //    /**

@@ -19,6 +19,7 @@ class User
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255, unique : true)]
     #[Groups(['client:list', 'client:details'])]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -31,6 +32,7 @@ class User
 
     #[ORM\ManyToOne(inversedBy: 'users', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['client:list', 'client:details'])]
     #[Assert\NotBlank]
     private ?Client $Client = null;
 

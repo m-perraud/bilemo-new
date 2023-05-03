@@ -22,11 +22,11 @@ class AppFixtures extends Fixture
         $faker = Factory::create();
         for ($h = 1; $h <= 10; $h++) {
             $product = new Product();
-            $product->setModelName($faker->word());
-            $product->setPrice($faker->numberBetween(0, 100));
-            $product->setColor($faker->safeColorName());
-            $product->setOperatingSystem($faker->word());
-            $product->setStock($faker->randomDigit());
+            $product->setModelName($faker->word())
+                ->setPrice($faker->numberBetween(0, 100))
+                ->setColor($faker->safeColorName())
+                ->setOperatingSystem($faker->word())
+                ->setStock($faker->randomDigit());
 
             $manager->persist($product);
             $manager->flush();
@@ -34,6 +34,7 @@ class AppFixtures extends Fixture
             for ($i = 1; $i <= 1; $i++) {
                 $client = new Client();
                 $client->setUsername($faker->word())
+                    ->setRoles(["ROLE_USER"])
                     ->setPassword($this->clientPasswordHasher->hashPassword($client, 'AppFixturesPass'));
 
                 $manager->persist($client);
