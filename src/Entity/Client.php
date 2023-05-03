@@ -16,11 +16,11 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('client:list')]
+    #[Groups(['client:list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups('client:list')]
+    #[Groups(['client:list', 'client:details'])]
     private ?string $username = null;
 
     #[ORM\Column]
@@ -33,7 +33,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\OneToMany(mappedBy: 'Client', targetEntity: User::class, orphanRemoval: true)]
-    #[Groups('client:list')]
+    #[Groups(['client:list'])]
     private Collection $users;
 
     public function __construct()

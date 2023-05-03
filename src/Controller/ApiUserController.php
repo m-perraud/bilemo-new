@@ -41,7 +41,7 @@ class ApiUserController extends AbstractController
     public function getUserDetails(User $user): JsonResponse
     {
         if($user->getClient() == $this->getUser()){
-            dd($user);
+            //dd($user);
             return $this->json($user, 200, [], ['groups' => 'client:details']);
         }
 
