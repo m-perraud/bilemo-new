@@ -17,9 +17,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ApiUserController extends AbstractController
 {
     #[Route('/api/users', name: 'api_user_index', methods:'GET')]
-    public function getUsersList(UserRepository $userRepository): JsonResponse
+    public function getUsersList(UserRepository $userRepository, Request $request): JsonResponse
     {
-        return $this->json($userRepository->findby(['Client' => $this->getUser()]), 200, [], ['groups' => 'client:list']);
+
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 6);
+
+        $client = $this->getUser();
+
+        return $this->json($userRepository->findAllUsersWithPagination($client, $page, $limit), 200, [], ['groups' => 'client:list']);
     }
 
     #[Route('/api/users/{id}', name: 'api_user_details', methods:'GET')]

@@ -4,18 +4,20 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Repository\ProductRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
 class ApiProductController extends AbstractController
 {
     #[Route('/api/products', name: 'api_product', methods: ['GET'])]
-    public function getProductsList(ProductRepository $productRepository): JsonResponse
+    public function getProductsList(ProductRepository $productRepository, Request $request): JsonResponse
     {
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 6);
 
-        return $this->json($productRepository->findAll(), 200, [], ['groups' => 'product:list']);
+        return $this->json($productRepository->findAllProductsWithPagination($page, $limit), 200, [], ['groups' => 'product:list']);
 
     }
 
