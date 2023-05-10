@@ -5,7 +5,18 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProductRepository;
 use JMS\Serializer\Annotation\Groups;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+/** 
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "api_product_details",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      )
+ * )
+ *  
+ */
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
