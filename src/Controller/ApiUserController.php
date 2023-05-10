@@ -16,9 +16,43 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 
 class ApiUserController extends AbstractController
 {
+        /**
+     * Cette méthode permet de récupérer la liste des utilisateurs liés au client.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Retourne la liste des utilisateurs liés au client",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=User::class, groups={"client:list"}))
+     *     )
+     * )
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="La page que l'on veut récupérer",
+     *     @OA\Schema(type="int")
+     * )
+     *
+     * @OA\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Le nombre d'éléments que l'on veut récupérer",
+     *     @OA\Schema(type="int")
+     * )
+     * @OA\Tag(name="Utilisateurs")
+     *
+     * @param ProductRepository $userRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/users', name: 'api_user_index', methods:'GET')]
     public function getUsersList(UserRepository $userRepository, Request $request, TagAwareCacheInterface $cachePool, SerializerInterface $serializer): JsonResponse
     {
@@ -39,7 +73,24 @@ class ApiUserController extends AbstractController
         return new JsonResponse($jsonUsersList, 200, [], true);
     }
 
-
+        /**
+     * Cette méthode permet de récupérer les informations détaillées d'un utilisateur.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Retourne les informations de l'utilisateur",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=User::class, groups={"client:details"}))
+     *     )
+     * )
+     * @OA\Tag(name="Utilisateurs")
+     *
+     * @param ProductRepository $userRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/users/{id}', name: 'api_user_details', methods:'GET')]
     public function getUserDetails(User $user, SerializerInterface $serializer): JsonResponse
     {
@@ -52,7 +103,24 @@ class ApiUserController extends AbstractController
         throw new ErrorException("Vous ne pouvez pas accéder à cet utilisateur");
     }
 
-
+        /**
+     * Cette méthode permet de supprimer un utilisateur lié au client.
+     *
+     * @OA\Response(
+     *     response=204,
+     *     description="Supprime l'utilisateur",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=User::class, groups={"client:details"}))
+     *     )
+     * )
+     * @OA\Tag(name="Utilisateurs")
+     *
+     * @param ProductRepository $userRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/users/{id}', name: 'api_user_delete', methods:['DELETE'])]
     public function deleteUser(User $user, EntityManagerInterface $manager, TagAwareCacheInterface $cachePool): JsonResponse
     {
@@ -68,7 +136,24 @@ class ApiUserController extends AbstractController
         throw new ErrorException("Vous ne pouvez pas accéder à cet utilisateur");
     }
 
-
+        /**
+     * Cette méthode permet de créer un utilisateur lié au client.
+     *
+     * @OA\Response(
+     *     response=201,
+     *     description="Crée l'utilisateur",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=User::class, groups={"client:details"}))
+     *     )
+     * )
+     * @OA\Tag(name="Utilisateurs")
+     *
+     * @param ProductRepository $userRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/users', name: 'api_user_post', methods:'POST')]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un utilisateur')]
     public function createUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $manager, ValidatorInterface $validator): JsonResponse
