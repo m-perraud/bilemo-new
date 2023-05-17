@@ -17,14 +17,14 @@ class ExceptionSubscriber implements EventSubscriberInterface
         if ($exception instanceof HttpException) {
             $data = [
                 'status' => $exception->getStatusCode(),
-                'message' => match ($exception->getStatusCode()){
+                'message' => match ($exception->getStatusCode()) {
                     404 => "L'élément recherché n'existe pas.",
                     403 => "Vous n'avez pas les droits suffisants pour effectuer cette action.",
                     default => "Le serveur n'a pas pu répondre à votre demande."
                 }
             ];
             $event->setResponse(new JsonResponse($data));
-    }
+        }
     }
 
     public static function getSubscribedEvents(): array

@@ -41,7 +41,7 @@ class UserRepository extends ServiceEntityRepository
         }
     }
 
-    public function findAllUsersWithPagination(Client $client, int $page, int $limit) 
+    public function findAllUsersWithPagination(Client $client, int $page, int $limit)
     {
         $qb = $this->createQueryBuilder('b')
             ->andWhere('b.Client = :Client')

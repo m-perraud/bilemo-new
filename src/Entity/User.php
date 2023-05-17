@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Hateoas\Configuration\Annotation as Hateoas;
 
-/** 
+/**
  * @Hateoas\Relation(
  *      "self",
  *      href = @Hateoas\Route(
@@ -18,7 +18,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      ),
  *      exclusion = @Hateoas\Exclusion(groups="client:details")
  * )
- *  
+ *
  * @Hateoas\Relation(
  *      "delete",
  *      href = @Hateoas\Route(
@@ -27,7 +27,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      ),
  *      exclusion = @Hateoas\Exclusion(groups="client:details", excludeIf = "expr(not is_granted('ROLE_ADMIN'))"),
  * )
- *  
+ *
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['Username'], message: 'Cet username est déjà utilisé.')]
