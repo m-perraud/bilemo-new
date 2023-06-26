@@ -1,6 +1,6 @@
 # bilemo
 
-<a href="https://codeclimate.com/github/m-perraud/bilemo-new/maintainability"><img src="https://api.codeclimate.com/v1/badges/f1485ae72124dc2d6446/maintainability" /></a> 
+<a href="https://codeclimate.com/github/m-perraud/bilemo-new/maintainability"><img src="https://api.codeclimate.com/v1/badges/f1485ae72124dc2d6446/maintainability" /></a> [![Codacy Badge](https://app.codacy.com/project/badge/Grade/afa79e5965254d1e839932102ecd00af)](https://app.codacy.com/gh/m-perraud/bilemo-new/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 ### Install
 In order to get started you first need to clone the project:
