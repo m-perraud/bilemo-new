@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Repository\ProductRepository;
+use App\Service\CacheService;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -50,18 +51,15 @@ class ApiProductController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/api/products', name: 'api_product', methods: ['GET'])]
-    public function getProductsList(ProductRepository $productRepository, Request $request, TagAwareCacheInterface $cachePool, SerializerInterface $serializer): JsonResponse
+    public function getProductsList(Request $request, SerializerInterface $serializer, CacheService $cache): JsonResponse
     {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 6);
+        $methodName = "getProductsList-";
 
-        $idCache = "getProductsList-" . $page . "-" . $limit;
         $context = SerializationContext::create()->setGroups(['product:list']);
 
-        $productsList = $cachePool->get($idCache, function (ItemInterface $item) use ($productRepository, $page, $limit) {
-            $item->tag("productsCache");
-            return $productRepository->findAllProductsWithPagination($page, $limit);
-        });
+        $productsList = $cache->cacheProductService($methodName, $page, $limit);
 
         $jsonProductsList = $serializer->serialize($productsList, 'json', $context);
         return new JsonResponse($jsonProductsList, 200, [], true);
@@ -69,23 +67,23 @@ class ApiProductController extends AbstractController
 
 
 
-/**
-     * Cette méthode permet de récupérer le détail d'un produit.
-     *
-     * @OA\Response(
-     *     response=200,
-     *     description="Retourne le détail d'un produit",
-     *     @OA\JsonContent(
-     *        type="array",
-     *        @OA\Items(ref=@Model(type=Product::class, groups={"product:list"}))
-     *     )
-     * )
-     *
-     * @OA\Tag(name="Produits")
-     *
-     * @param SerializerInterface $serializer
-     * @return JsonResponse
-     */
+    /**
+         * Cette méthode permet de récupérer le détail d'un produit.
+         *
+         * @OA\Response(
+         *     response=200,
+         *     description="Retourne le détail d'un produit",
+         *     @OA\JsonContent(
+         *        type="array",
+         *        @OA\Items(ref=@Model(type=Product::class, groups={"product:list"}))
+         *     )
+         * )
+         *
+         * @OA\Tag(name="Produits")
+         *
+         * @param SerializerInterface $serializer
+         * @return JsonResponse
+         */
     #[Route('/api/products/{id}', name: 'api_product_details', methods:'GET')]
     public function getProductDetails(Product $product, SerializerInterface $serializer): JsonResponse
     {

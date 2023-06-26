@@ -23,7 +23,7 @@ class AppFixtures extends Fixture
         for ($h = 1; $h <= 10; $h++) {
             $product = new Product();
             $product->setModelName($faker->word())
-                ->setPrice($faker->numberBetween(0, 100))
+                ->setPrice(strval($faker->numberBetween(0, 100)))
                 ->setColor($faker->safeColorName())
                 ->setOperatingSystem($faker->word())
                 ->setStock($faker->randomDigit());

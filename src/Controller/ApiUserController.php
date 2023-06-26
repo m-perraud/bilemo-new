@@ -4,13 +4,13 @@ namespace App\Controller;
 
 use ErrorException;
 use App\Entity\User;
+use App\Service\CacheService;
 use OpenApi\Annotations as OA;
 use App\Repository\UserRepository;
 use JMS\Serializer\SerializerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Symfony\Contracts\Cache\ItemInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -55,25 +55,21 @@ class ApiUserController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/api/users', name: 'api_user_index', methods:'GET')]
-    public function getUsersList(UserRepository $userRepository, Request $request, TagAwareCacheInterface $cachePool, SerializerInterface $serializer): JsonResponse
+    public function getUsersList(Request $request, SerializerInterface $serializer, CacheService $cache): JsonResponse
     {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 3);
+        $methodName = "getUsersList-";
 
-        $idCache = "getUsersList-" . $page . "-" . $limit;
         $context = SerializationContext::create()->setGroups(['client:list']);
 
-        $usersList = $cachePool->get($idCache, function (ItemInterface $item) use ($userRepository, $page, $limit) {
-            $client = $this->getUser();
-            $item->tag("usersCache");
-            return $userRepository->findAllUsersWithPagination($client, $page, $limit);
-        });
+        $usersList = $cache->cacheUserService($methodName, $page, $limit);
 
         $jsonUsersList = $serializer->serialize($usersList, 'json', $context);
         return new JsonResponse($jsonUsersList, 200, [], true);
     }
 
-        /**
+    /**
      * Cette méthode permet de récupérer les informations détaillées d'un utilisateur.
      *
      * @OA\Response(
@@ -101,7 +97,7 @@ class ApiUserController extends AbstractController
         throw new ErrorException("Vous ne pouvez pas accéder à cet utilisateur");
     }
 
-        /**
+    /**
      * Cette méthode permet de supprimer un utilisateur lié au client.
      *
      * @OA\Response(
@@ -131,7 +127,7 @@ class ApiUserController extends AbstractController
         throw new ErrorException("Vous ne pouvez pas accéder à cet utilisateur");
     }
 
-        /**
+    /**
      * Cette méthode permet de créer un utilisateur lié au client.
      *
      * @OA\Response(
