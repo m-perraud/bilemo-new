@@ -158,7 +158,6 @@ class ApiUserController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/api/users', name: 'api_user_post', methods:'POST')]
-    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un utilisateur')]
     public function createUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $manager, ValidatorInterface $validator): JsonResponse
     {
         $jsonUser = $serializer->deserialize($request->getContent(), User::class, 'json');
