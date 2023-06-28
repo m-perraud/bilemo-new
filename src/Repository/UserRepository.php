@@ -42,6 +42,18 @@ class UserRepository extends ServiceEntityRepository
         }
     }
 
+    public function findAllUsers(Client|UserInterface $client)
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->andWhere('b.Client = :Client')
+            ->setParameter('Client', $client);
+
+        $query = $qb->getQuery();
+        $query->setFetchMode(User::class, "Client", ClassMetadata::FETCH_EAGER);
+
+        return $query->getResult();
+    }
+
     public function findAllUsersWithPagination(Client|UserInterface $client, int $page, int $limit)
     {
         $qb = $this->createQueryBuilder('b')

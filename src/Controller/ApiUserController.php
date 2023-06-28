@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use ErrorException;
 use App\Entity\User;
+use App\Model\NotFound;
+use App\Model\NotAuthorized;
+use App\Model\InvalidData;
 use App\Service\CacheService;
 use OpenApi\Annotations as OA;
 use App\Repository\UserRepository;
@@ -34,17 +37,25 @@ class ApiUserController extends AbstractController
      *        @OA\Items(ref=@Model(type=User::class, groups={"client:list"}))
      *     )
      * )
+     * @OA\Response(
+     *     response=500,
+     *     description="Pas de contenu dans cette page.",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=NotAuthorized::class))
+     *     )
+     * )
      * @OA\Parameter(
      *     name="page",
      *     in="query",
-     *     description="La page que l'on veut récupérer",
+     *     description="La page que l'on veut récupérer. Par défaut : 1",
      *     @OA\Schema(type="int")
      * )
      *
      * @OA\Parameter(
      *     name="limit",
      *     in="query",
-     *     description="Le nombre d'éléments que l'on veut récupérer",
+     *     description="Le nombre d'éléments que l'on veut récupérer par page. Par défaut : 6",
      *     @OA\Schema(type="int")
      * )
      * @OA\Tag(name="Utilisateurs")
@@ -55,17 +66,25 @@ class ApiUserController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/api/users', name: 'api_user_index', methods:'GET')]
-    public function getUsersList(Request $request, SerializerInterface $serializer, CacheService $cache): JsonResponse
+    public function getUsersList(Request $request, SerializerInterface $serializer, CacheService $cache, UserRepository $userRepository): JsonResponse
     {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 3);
         $methodName = "getUsersList-";
 
         $context = SerializationContext::create()->setGroups(['client:list']);
-
         $usersList = $cache->cacheUserService($methodName, $page, $limit);
+        $allUsersList = $cache->cacheAllUsersService($methodName);
+        $allUsers = count($allUsersList);
 
-        $jsonUsersList = $serializer->serialize($usersList, 'json', $context);
+        $response = [];        
+        $response['page'] = $page;
+        $response['limit'] = $limit;
+        $response['nbr pages'] = number_format($allUsers / $limit);
+        $response['total users'] = $allUsers;        
+        $response['result'] = $usersList;
+
+        $jsonUsersList = $serializer->serialize($response, 'json', $context);
         return new JsonResponse($jsonUsersList, 200, [], true);
     }
 
@@ -78,6 +97,22 @@ class ApiUserController extends AbstractController
      *     @OA\JsonContent(
      *        type="array",
      *        @OA\Items(ref=@Model(type=User::class, groups={"client:details"}))
+     *     )
+     * )
+     * @OA\Response(
+     *     response=404,
+     *     description="L'élément recherché n'existe pas.",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=NotFound::class))
+     *     )
+     * )
+     *      * @OA\Response(
+     *     response=500,
+     *     description="Vous ne pouvez pas accéder à cet utilisateur",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=NotAuthorized::class))
      *     )
      * )
      * @OA\Tag(name="Utilisateurs")
@@ -108,6 +143,22 @@ class ApiUserController extends AbstractController
      *        @OA\Items(ref=@Model(type=User::class, groups={"client:details"}))
      *     )
      * )
+     * @OA\Response(
+     *     response=404,
+     *     description="L'élément recherché n'existe pas.",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=NotFound::class))
+     *     )
+     * )
+     *      * @OA\Response(
+     *     response=500,
+     *     description="Vous ne pouvez pas accéder à cet utilisateur",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=NotAuthorized::class))
+     *     )
+     * )
      * @OA\Tag(name="Utilisateurs")
      *
      * @return JsonResponse
@@ -136,8 +187,24 @@ class ApiUserController extends AbstractController
      *     @OA\JsonContent(
      *        type="array",
      *        @OA\Items(ref=@Model(type=User::class, groups={"client:details"}))
-     * ))
-
+     *     )
+     * )
+     * @OA\Response(
+     *     response=500,
+     *     description="Des données sont manquantes.",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=NotAuthorized::class))
+     *     )
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Des données ne sont pas valides, merci de les vérifier.",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=InvalidData::class))
+     *     )
+     * )
      * @OA\RequestBody(
      *     required=true,
      *     @OA\MediaType(
